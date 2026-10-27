@@ -31,7 +31,8 @@ const schema = z
       .string()
       .refine((v) => Buffer.from(v, 'base64').length === 32, 'DATA_ENCRYPTION_KEY must be 32 bytes, base64-encoded'),
     // Private directory for uploaded documents (local storage driver). Never inside a web root.
-    UPLOAD_DIR: z.string().default('.data/uploads'),
+    // On Vercel only /tmp is writable, and it is per-instance and temporary (see OPERATIONS.md).
+    UPLOAD_DIR: z.string().default(process.env.VERCEL ? '/tmp/senova-uploads' : '.data/uploads'),
     MAX_UPLOAD_MB: z.coerce.number().positive().max(25).default(10),
     SMTP_HOST: z.string().optional(),
     SMTP_PORT: z.coerce.number().int().positive().default(587),

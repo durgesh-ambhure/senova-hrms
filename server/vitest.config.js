@@ -5,7 +5,7 @@ export default defineConfig({
     environment: 'node',
     globalSetup: ['./test/globalSetup.js'],
     setupFiles: ['./test/setup.js'],
-    include: ['src/**/*.test.js', 'test/**/*.test.js'],
+    include: ['src/**/*.test.js', 'test/**/*.test.js', 'api/**/*.test.js'],
     hookTimeout: 120_000,
     testTimeout: 30_000,
     env: {

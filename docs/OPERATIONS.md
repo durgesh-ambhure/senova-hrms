@@ -39,6 +39,47 @@ with a list of problems instead of running insecurely.
 5. **Health checks** — liveness `GET /api/v1/health`, readiness `GET /api/v1/health/ready`
    (returns 503 when MongoDB is unreachable).
 
+## Deploying on Vercel
+
+Two Vercel projects deploy from the same repository:
+
+| Project | Root Directory | Framework | Notes |
+|---|---|---|---|
+| `senova` (web, https://senova-sigma.vercel.app) | `client` | Vite | `client/vercel.json` proxies `/api/*` to the API project and falls back to `index.html` for app routes, so the browser talks to one origin (first-party session cookie, no CORS). |
+| `senova-backend` (API, https://senova-backend.vercel.app) | `server` | Other | `server/vercel.json` installs the workspace from the repo root and routes every request to the serverless function `server/api/index.js`. |
+
+**Database.** Use MongoDB Atlas (any tier; it is a replica set, which payroll and leave transactions need). In
+Atlas → Network Access allow `0.0.0.0/0`, because Vercel functions have no fixed outbound IPs; rely on a
+strong database user password.
+
+**Environment variables (`senova-backend`, Production).** Set these in Vercel → Project → Settings →
+Environment Variables. Generate secrets locally with the commands in `server/.env.example`; never commit them.
+
+| Variable | Value |
+|---|---|
+| `NODE_ENV` | `production` |
+| `MONGODB_URI` | Atlas connection string (`mongodb+srv://…/senova?retryWrites=true&w=majority`) |
+| `SESSION_SECRET` | 48 random bytes, base64url |
+| `DATA_ENCRYPTION_KEY` | 32 random bytes, base64. Keep a copy: losing it makes bank/identity numbers unreadable |
+| `CLIENT_ORIGINS` / `APP_URL` | `https://senova-sigma.vercel.app` |
+| `TRUST_PROXY` | `1` |
+| `MAX_UPLOAD_MB` | `4` (Vercel rejects request bodies over 4.5 MB) |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM` | your mail provider (required in production; invites and password resets are emailed) |
+
+The web project needs no variables. After changing variables, redeploy the backend.
+
+**First administrator.** Point a local `server/.env` at the Atlas URI (with the same `DATA_ENCRYPTION_KEY`
+and SMTP settings) and run `node --env-file=.env scripts/create-admin.js "Name" you@company.com` from `server/`;
+the invitation email links to the live site.
+
+**Limitations on Vercel**
+
+* Uploaded documents are written to `/tmp` on the function instance: they are not shared between instances
+  and disappear when the instance is recycled. Do not rely on document upload until object storage
+  (e.g. Vercel Blob or S3) is configured behind `server/src/shared/storage.js` (DECISIONS E4).
+* Rate limits are counted per function instance, so they are looser than on a single server.
+* The first request after idle time is slower (cold start: connect to Atlas, then serve).
+
 ## Logging and monitoring
 
 * Structured JSON logs (pino) to stdout in production; ship them to your log platform.
