@@ -1,0 +1,24 @@
+{
+  "name": "senova-hrms",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Senova HRMS — internal single-company Human Resource Management System",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "start": "node scripts/start.mjs",
+    "dev:server": "npm run dev -w server",
+    "dev:client": "npm run dev -w client",
+    "db:dev": "npm run db:dev -w server",
+    "seed": "npm run seed -w server",
+    "lint": "npm run lint -w server && npm run lint -w client",
+    "test": "npm run test -w server && npm run test -w client",
+    "build": "npm run build -w client",
+    "check": "npm run lint && npm test && npm run build"
+  }
+}

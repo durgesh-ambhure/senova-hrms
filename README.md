@@ -60,7 +60,7 @@ The first `npm test` / `npm run db:dev` downloads a MongoDB binary (~800 MB, cac
 | `npm run lint` | ESLint for server and client |
 | `npm test` | Server API/unit tests (in-memory replica set) and client component tests |
 | `npm run build` | Production build of the web app → `client/dist` |
-| `npm run check` | lint + test + build (what CI runs) |
+| `npm run check` | lint + test + build (run before merging or deploying) |
 | `node --env-file=.env scripts/create-admin.js "Name" email` | (in `server/`) invite the first Super Admin in any environment |
 
 ## Repository layout
@@ -90,7 +90,7 @@ Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 | Phase | Scope | Status |
 |---|---|---|
-| 1 | Foundation: auth, sessions, RBAC, users, roles, company settings, audit log, app shell, dashboard, CI | ✅ Done |
+| 1 | Foundation: auth, sessions, RBAC, users, roles, company settings, audit log, app shell, dashboard | ✅ Done |
 | 2 | Departments, designations, employee directory & profiles, lifecycle & history, bank/identity, documents, onboarding/offboarding | ✅ Done |
 | 3 | Shifts, holidays, attendance & corrections, leave types/balances/requests, timesheets & projects | ✅ Done |
 | 4 | Job openings, candidates, pipeline, interviews & feedback, offers & approval, candidate → employee | ✅ Done |

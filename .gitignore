@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+.data/
+*.log
+.DS_Store
+uploads/
+
+# Local Claude Code session settings
+.claude/

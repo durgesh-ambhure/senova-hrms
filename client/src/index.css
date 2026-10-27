@@ -1,0 +1,114 @@
+@import 'tailwindcss';
+
+/*
+ * Senova design tokens. Navy for structure and primary actions, teal as the accent,
+ * slate neutrals. All text/background pairs used in components meet WCAG AA contrast.
+ */
+@theme {
+  --font-sans: 'Inter', 'Segoe UI', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --color-brand-50: #eef3fb;
+  --color-brand-100: #d9e3f5;
+  --color-brand-200: #b4c7eb;
+  --color-brand-300: #85a3dc;
+  --color-brand-400: #5479c7;
+  --color-brand-500: #3459ad;
+  --color-brand-600: #24458f;
+  --color-brand-700: #1d3876;
+  --color-brand-800: #14306b;
+  --color-brand-900: #0f2350;
+  --color-brand-950: #0a1736;
+
+  --color-accent-50: #effcf9;
+  --color-accent-100: #c9f5ec;
+  --color-accent-300: #5eead4;
+  --color-accent-400: #2dd4bf;
+  --color-accent-500: #14b8a6;
+  --color-accent-600: #0d9488;
+  --color-accent-700: #0f766e;
+
+  --shadow-card: 0 1px 2px rgb(15 35 80 / 0.06), 0 1px 3px rgb(15 35 80 / 0.08);
+  --shadow-overlay: 0 12px 32px rgb(15 35 80 / 0.18);
+}
+
+@layer base {
+  html {
+    @apply bg-slate-50 text-slate-800 antialiased;
+  }
+  body {
+    @apply min-h-screen font-sans text-sm;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500;
+  }
+}
+
+/*
+ * Neumorphic ("soft UI") sign-in surface, scoped to .neu (AuthLayout). Kept outside @layer so it
+ * overrides the shared control utilities. Labels stay dark, focus rings stay visible and error
+ * states keep their red edge: soft shadows alone are too low-contrast to carry meaning.
+ */
+.neu {
+  --neu-bg: #e6ebf2;
+  --neu-light: #ffffff;
+  --neu-dark: #c3cad6;
+}
+/* One continuous wash instead of two panels: brand navy behind the headline, easing into the soft
+   neumorphic grey before the card so its light and dark shadows still read. Phones get the grey only. */
+.auth-bg {
+  background: #e6ebf2;
+}
+@media (min-width: 1024px) {
+  .auth-bg {
+    background: linear-gradient(90deg, #0f2350 0%, #14306b 22%, #23427e 29%, #5a75a8 39%, #a9b9d4 46%, #d9e0eb 58%);
+  }
+}
+.neu-card {
+  background: var(--neu-bg);
+  border-radius: 1.75rem;
+  box-shadow: 12px 12px 28px var(--neu-dark), -12px -12px 28px var(--neu-light);
+}
+.neu input {
+  background: var(--neu-bg);
+  border: 1px solid transparent;
+  border-radius: 0.875rem;
+  height: 2.875rem;
+  box-shadow: inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
+  transition: box-shadow 150ms ease, border-color 150ms ease;
+}
+.neu input:focus {
+  outline: none;
+  border-color: var(--color-brand-400);
+  box-shadow: inset 3px 3px 6px var(--neu-dark), inset -3px -3px 6px var(--neu-light), 0 0 0 3px rgb(52 89 173 / 0.25);
+}
+.neu input[aria-invalid='true'] {
+  border-color: #dc2626;
+}
+.neu button[type='submit'] {
+  border-radius: 0.875rem;
+  height: 2.875rem;
+  box-shadow: 6px 6px 14px var(--neu-dark), -6px -6px 14px var(--neu-light);
+  transition: box-shadow 150ms ease, transform 150ms ease;
+}
+.neu button[type='submit']:hover:not(:disabled) {
+  box-shadow: 8px 8px 18px var(--neu-dark), -8px -8px 18px var(--neu-light);
+}
+.neu button[type='submit']:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: inset 4px 4px 10px rgb(0 0 0 / 0.35), inset -3px -3px 8px rgb(255 255 255 / 0.12);
+}
+.neu button[type='submit']:focus-visible {
+  outline: 3px solid var(--color-brand-400);
+  outline-offset: 3px;
+}
+.neu-logo {
+  padding: 0.75rem 1rem;
+  border-radius: 1.25rem;
+  box-shadow: 6px 6px 14px var(--neu-dark), -6px -6px 14px var(--neu-light);
+}
+@media (prefers-reduced-motion: reduce) {
+  .neu input,
+  .neu button[type='submit'] {
+    transition: none;
+  }
+}
