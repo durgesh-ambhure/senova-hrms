@@ -57,12 +57,22 @@ const schema = z
     }
   });
 
+/** Thrown instead of exiting on serverless hosts, so the handler can report which settings are wrong. */
+export class ConfigError extends Error {
+  constructor(fields, detail) {
+    super(`Invalid environment configuration:\n${detail}`);
+    this.name = 'ConfigError';
+    this.fields = fields;
+  }
+}
+
 function load() {
   const parsed = schema.safeParse(process.env);
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `  - ${i.path.join('.')}: ${i.message}`).join('\n');
     // Logger depends on env, so report directly and stop: the app must not start misconfigured.
     console.error(`Invalid environment configuration:\n${issues}`);
+    if (process.env.VERCEL) throw new ConfigError([...new Set(parsed.error.issues.map((i) => i.path.join('.')))], issues);
     process.exit(1);
   }
   return Object.freeze(parsed.data);
